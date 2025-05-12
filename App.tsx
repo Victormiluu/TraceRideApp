@@ -6,6 +6,7 @@ import LoginScreen from './src/screens/LoginScreean';
 import VehiclesScreen from './src/screens/VehiclesScreen';
 import VehicleMapScreen from './src/screens/VehicleMapScreen';
 import RegisterScreen from './src/screens/RegisterScreen';
+import VehicleRegistrationScreen from './src/screens/VehicleRegistrationScreen';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -28,10 +29,10 @@ export default function App() {
           component={VehicleMapScreen}
           options={{ title: 'Vehicle Location' }}
         />
-          <Stack.Screen
+        <Stack.Screen
         name="Register"
         component={RegisterScreen}
-         options={{ headerShown: false }}
+        options={{ headerShown: false }}
         
       />
       </Stack.Navigator>

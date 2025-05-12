@@ -1,3 +1,4 @@
+import { StackNavigationProp } from '@react-navigation/stack';
 import React, { useState } from 'react';
 import {
   View,
@@ -8,11 +9,19 @@ import {
   Alert,
   ScrollView,
 } from 'react-native';
+import { RootStackParamList } from '../../types';
+
+type VehicleRegisterScreenNavigationProp = StackNavigationProp<RootStackParamList, 'VehicleRegister'>;
+
+type Props = {
+  navigation: VehicleRegisterScreenNavigationProp;
+};
 
 const primaryColor = '#7CD4D9';
 const placeholderColor = '#999';
 
 interface Vehicle {
+type Vehicle = {
   id: string;
   plate: string;
   brand: string;
@@ -20,9 +29,7 @@ interface Vehicle {
   color: string;
   year: string;
 }
-
-
-export default function VehicleRegistration() {
+const  VehicleRegistration = ({ navigation }: Props) => {
   const [plate, setPlate] = useState('');
   const [brand, setBrand] = useState('');
   const [model, setModel] = useState('');
@@ -164,3 +171,5 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
+
+export default VehicleRegistration

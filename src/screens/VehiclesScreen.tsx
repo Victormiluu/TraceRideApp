@@ -110,7 +110,7 @@ const VehiclesScreen = ({ navigation }: Props) => {
         contentContainerStyle={styles.list}
       />
       
-      <TouchableOpacity style={styles.addButton}>
+      <TouchableOpacity style={styles.addButton} onPress={() => navigation.navigate('VehicleRegister')}>
         <Text style={styles.addButtonText}>Register Vehicle</Text>
       </TouchableOpacity>
     </View>
