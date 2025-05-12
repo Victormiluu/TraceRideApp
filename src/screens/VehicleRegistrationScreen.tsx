@@ -12,23 +12,15 @@ import {
 const primaryColor = '#7CD4D9';
 const placeholderColor = '#999';
 
-<<<<<<< HEAD
-type Vehicle = {
-=======
 interface Vehicle {
->>>>>>> 1bef8cd0f0b870df485e811b643a5beaaab4388c
   id: string;
   plate: string;
   brand: string;
   model: string;
   color: string;
   year: string;
-<<<<<<< HEAD
-};
-=======
 }
 
->>>>>>> 1bef8cd0f0b870df485e811b643a5beaaab4388c
 
 export default function VehicleRegistration() {
   const [plate, setPlate] = useState('');
@@ -57,9 +49,7 @@ export default function VehicleRegistration() {
     if (editingId) {
       setVehicles((prev) =>
         prev.map((v) =>
-          v.id === editingId
-            ? { ...v, plate, brand, model, color, year }
-            : v
+          v.id === editingId ? { ...v, plate, brand, model, color, year } : v
         )
       );
       Alert.alert('Atualizado', 'Veículo atualizado com sucesso!');
@@ -80,6 +70,8 @@ export default function VehicleRegistration() {
 
     clearFields();
   };
+
+ 
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -117,8 +109,8 @@ export default function VehicleRegistration() {
         style={styles.input}
         placeholder="Ano"
         placeholderTextColor={placeholderColor}
-        keyboardType="numeric"
         value={year}
+        keyboardType="numeric"
         onChangeText={setYear}
       />
 
@@ -129,10 +121,7 @@ export default function VehicleRegistration() {
       </TouchableOpacity>
 
       {editingId && (
-        <TouchableOpacity
-          style={[styles.button, styles.cancelButton]}
-          onPress={clearFields}
-        >
+        <TouchableOpacity style={[styles.button, styles.cancelButton]} onPress={clearFields}>
           <Text style={styles.buttonText}>Cancelar</Text>
         </TouchableOpacity>
       )}
