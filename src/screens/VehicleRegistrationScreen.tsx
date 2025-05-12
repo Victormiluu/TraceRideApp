@@ -12,14 +12,23 @@ import {
 const primaryColor = '#7CD4D9';
 const placeholderColor = '#999';
 
+<<<<<<< HEAD
 type Vehicle = {
+=======
+interface Vehicle {
+>>>>>>> 1bef8cd0f0b870df485e811b643a5beaaab4388c
   id: string;
   plate: string;
   brand: string;
   model: string;
   color: string;
   year: string;
+<<<<<<< HEAD
 };
+=======
+}
+
+>>>>>>> 1bef8cd0f0b870df485e811b643a5beaaab4388c
 
 export default function VehicleRegistration() {
   const [plate, setPlate] = useState('');
