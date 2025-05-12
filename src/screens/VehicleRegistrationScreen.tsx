@@ -12,14 +12,23 @@ import {
 const primaryColor = '#7CD4D9';
 const placeholderColor = '#999';
 
+type Vehicle = {
+  id: string;
+  plate: string;
+  brand: string;
+  model: string;
+  color: string;
+  year: string;
+};
+
 export default function VehicleRegistration() {
   const [plate, setPlate] = useState('');
   const [brand, setBrand] = useState('');
   const [model, setModel] = useState('');
   const [color, setColor] = useState('');
   const [year, setYear] = useState('');
-  const [vehicles, setVehicles] = useState([]);
-  const [editingId, setEditingId] = useState(null);
+  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   const clearFields = () => {
     setPlate('');
@@ -39,7 +48,9 @@ export default function VehicleRegistration() {
     if (editingId) {
       setVehicles((prev) =>
         prev.map((v) =>
-          v.id === editingId ? { ...v, plate, brand, model, color, year } : v
+          v.id === editingId
+            ? { ...v, plate, brand, model, color, year }
+            : v
         )
       );
       Alert.alert('Atualizado', 'Veículo atualizado com sucesso!');
@@ -60,8 +71,6 @@ export default function VehicleRegistration() {
 
     clearFields();
   };
-
- 
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -99,8 +108,8 @@ export default function VehicleRegistration() {
         style={styles.input}
         placeholder="Ano"
         placeholderTextColor={placeholderColor}
-        value={year}
         keyboardType="numeric"
+        value={year}
         onChangeText={setYear}
       />
 
@@ -111,7 +120,10 @@ export default function VehicleRegistration() {
       </TouchableOpacity>
 
       {editingId && (
-        <TouchableOpacity style={[styles.button, styles.cancelButton]} onPress={clearFields}>
+        <TouchableOpacity
+          style={[styles.button, styles.cancelButton]}
+          onPress={clearFields}
+        >
           <Text style={styles.buttonText}>Cancelar</Text>
         </TouchableOpacity>
       )}
