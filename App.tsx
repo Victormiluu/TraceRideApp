@@ -29,6 +29,11 @@ export default function App() {
           component={VehicleMapScreen}
           options={{ title: 'Vehicle Location' }}
         />
+          <Stack.Screen
+          name="VehicleRegister"
+          component={VehicleRegistrationScreen}
+          options={{ title: 'Vehicle Register' }}
+        />
         <Stack.Screen
         name="Register"
         component={RegisterScreen}
