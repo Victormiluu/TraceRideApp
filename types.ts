@@ -3,6 +3,7 @@ export type RootStackParamList = {
     Vehicles: undefined;
     VehicleMap: { vehicleId: string };
     VehicleRegister: undefined
+    Register: undefined;
   };
   
   export interface LatLng {

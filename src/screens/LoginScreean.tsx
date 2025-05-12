@@ -36,9 +36,10 @@ const LoginScreen = ({ navigation }: Props) => {
         <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
       
-      <TouchableOpacity onPress={() => console.log('Create account')}>
-        <Text style={styles.createAccountText}>Create an account</Text>
-      </TouchableOpacity>
+      <TouchableOpacity onPress={() => navigation.navigate('Register')}>
+  <Text style={styles.createAccountText}>Create an account</Text>
+</TouchableOpacity>
+
     </View>
   );
 };
