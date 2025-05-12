@@ -12,14 +12,24 @@ import {
 const primaryColor = '#7CD4D9';
 const placeholderColor = '#999';
 
+interface Vehicle {
+  id: string;
+  plate: string;
+  brand: string;
+  model: string;
+  color: string;
+  year: string;
+}
+
+
 export default function VehicleRegistration() {
   const [plate, setPlate] = useState('');
   const [brand, setBrand] = useState('');
   const [model, setModel] = useState('');
   const [color, setColor] = useState('');
   const [year, setYear] = useState('');
-  const [vehicles, setVehicles] = useState([]);
-  const [editingId, setEditingId] = useState(null);
+  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   const clearFields = () => {
     setPlate('');
