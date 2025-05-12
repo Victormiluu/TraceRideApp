@@ -1,0 +1,42 @@
+name: CI - React Native
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  test:
+    name: 🧪 Test & Build Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: ⬇️ Checkout do código
+        uses: actions/checkout@v3
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: 📦 Instalar dependências
+        run: |
+          npm install
+
+      - name: 🔍 Verificar TypeScript
+        run: |
+          npx tsc --noEmit
+
+      - name: 🧪 Executar testes
+        run: |
+          npm test
+
+      - name: ✅ Build JS (Metro)
+        run: |
+          npx react-native bundle \
+            --platform android \
+            --dev false \
+            --entry-file index.js \
+            --bundle-output /dev/null \
+            --assets-dest /dev/null
