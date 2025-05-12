@@ -61,28 +61,7 @@ export default function VehicleRegistration() {
     clearFields();
   };
 
-  const handleRemove = (id: string) => {
-    Alert.alert('Remover veículo', 'Tem certeza que deseja remover este veículo?', [
-      { text: 'Cancelar', style: 'cancel' },
-      {
-        text: 'Remover',
-        style: 'destructive',
-        onPress: () => {
-          setVehicles((prev) => prev.filter((v) => v.id !== id));
-          if (editingId === id) clearFields();
-        },
-      },
-    ]);
-  };
-
-  const handleEdit = (vehicle: any) => {
-    setEditingId(vehicle.id);
-    setPlate(vehicle.plate);
-    setBrand(vehicle.brand);
-    setModel(vehicle.model);
-    setColor(vehicle.color);
-    setYear(vehicle.year);
-  };
+ 
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
