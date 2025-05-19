@@ -20,6 +20,7 @@ type Props = {
 const primaryColor = '#7CD4D9';
 const placeholderColor = '#999';
 
+interface Vehicle {
 type Vehicle = {
   id: string;
   plate: string;
@@ -55,9 +56,7 @@ const  VehicleRegistration = ({ navigation }: Props) => {
     if (editingId) {
       setVehicles((prev) =>
         prev.map((v) =>
-          v.id === editingId
-            ? { ...v, plate, brand, model, color, year }
-            : v
+          v.id === editingId ? { ...v, plate, brand, model, color, year } : v
         )
       );
       Alert.alert('Atualizado', 'Veículo atualizado com sucesso!');
@@ -78,6 +77,8 @@ const  VehicleRegistration = ({ navigation }: Props) => {
 
     clearFields();
   };
+
+ 
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -115,8 +116,8 @@ const  VehicleRegistration = ({ navigation }: Props) => {
         style={styles.input}
         placeholder="Ano"
         placeholderTextColor={placeholderColor}
-        keyboardType="numeric"
         value={year}
+        keyboardType="numeric"
         onChangeText={setYear}
       />
 
@@ -127,10 +128,7 @@ const  VehicleRegistration = ({ navigation }: Props) => {
       </TouchableOpacity>
 
       {editingId && (
-        <TouchableOpacity
-          style={[styles.button, styles.cancelButton]}
-          onPress={clearFields}
-        >
+        <TouchableOpacity style={[styles.button, styles.cancelButton]} onPress={clearFields}>
           <Text style={styles.buttonText}>Cancelar</Text>
         </TouchableOpacity>
       )}
