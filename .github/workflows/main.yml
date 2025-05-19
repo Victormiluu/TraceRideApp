@@ -19,18 +19,28 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '18'
+          cache: 'npm'
 
       - name: 📦 Instalar dependências
         run: |
           npm install
+          npm install -g jest
 
       - name: 🔍 Verificar TypeScript
-        run: |
-          npx tsc --noEmit
+        run: npx tsc --noEmit
 
       - name: 🧪 Executar testes
         run: |
-          npm test
+          npm test -- --testPathPattern=src/test --watchAll=false --coverage
+        env:
+          NODE_ENV: test
+          CI: true
+
+      - name: 📊 Report de Cobertura
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-report
+          path: coverage/
 
       - name: ✅ Build JS (Metro)
         run: |
