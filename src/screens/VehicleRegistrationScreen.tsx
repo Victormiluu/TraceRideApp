@@ -20,7 +20,6 @@ type Props = {
 const primaryColor = '#7CD4D9';
 const placeholderColor = '#999';
 
-interface Vehicle {
 type Vehicle = {
   id: string;
   plate: string;
