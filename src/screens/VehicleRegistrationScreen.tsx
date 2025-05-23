@@ -11,7 +11,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { RootStackParamList } from '../../types';
+import { RootStackParamList, LatLng, Vehicle } from '../../types';
 
 type VehicleRegisterScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
@@ -25,16 +25,6 @@ type Props = {
 const primaryColor = '#7CD4D9';
 const placeholderColor = '#999';
 
-type Vehicle = {
-  id: string;
-  plate: string;
-  brand: string;
-  model: string;
-  color: string;
-  year: string;
-  chipCode: string;
-};
-
 const VehicleRegistration = ({ navigation }: Props) => {
   const [plate, setPlate] = useState('');
   const [brand, setBrand] = useState('');
@@ -46,10 +36,26 @@ const VehicleRegistration = ({ navigation }: Props) => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const generateRandomLocations = (): LatLng[] => {
+    const locationCount = Math.floor(Math.random() * 16) + 5; // 5-20 localizações
+    const baseLat = -23.5505 + (Math.random() - 0.5) * 0.1;
+    const baseLng = -46.6333 + (Math.random() - 0.5) * 0.1;
+    const locations: LatLng[] = [];
+    const now = new Date();
+
+    for (let i = 0; i < locationCount; i++) {
+      locations.push({
+        latitude: baseLat + (Math.random() * 0.01 - 0.005),
+        longitude: baseLng + (Math.random() * 0.01 - 0.005),
+        timestamp: new Date(now.getTime() + i * 60000).toISOString()
+      });
+    }
+    return locations;
+  };
+
   const clearFields = () => {
     setPlate('');
     setBrand('');
-    setModel('');
     setColor('');
     setYear('');
     setChipCode('');
@@ -109,14 +115,17 @@ const VehicleRegistration = ({ navigation }: Props) => {
       saveVehiclesToStorage(updatedVehicles);
       Alert.alert('Atualizado', 'Veículo atualizado com sucesso!');
     } else {
-      const newVehicle = {
+      const newVehicle: Vehicle = {
         id: Date.now().toString(),
         plate,
         brand,
-        model,
+        model: model as 'Car' | 'Motorcycle',
         color,
         year,
         chipCode,
+        status: 'Estacionado',
+        locations: generateRandomLocations(),
+        name: `${brand} ${model}`
       };
       const updatedVehicles = [...vehicles, newVehicle];
       setVehicles(updatedVehicles);
@@ -200,6 +209,7 @@ const VehicleRegistration = ({ navigation }: Props) => {
   );
 };
 
+// Os estilos permanecem os mesmos
 const styles = StyleSheet.create({
   container: {
     padding: 20,

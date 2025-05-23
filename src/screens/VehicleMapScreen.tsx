@@ -44,7 +44,11 @@ const VehicleMapScreen = ({ route }: Props) => {
           const vehicles = JSON.parse(storedVehicles);
           const foundVehicle = vehicles.find((v: any) => v.id === vehicleId);
           if (foundVehicle) {
-            setVehicle({ ...foundVehicle });
+            setVehicle({
+              ...foundVehicle,
+              status: foundVehicle.status || 'Estacionado',
+              locations: foundVehicle.locations || [],
+            });
           } else {
             setVehicle(null);
           }
@@ -186,7 +190,7 @@ const VehicleMapScreen = ({ route }: Props) => {
 
           <TouchableOpacity
             style={styles.card}
-            // onPress={() => navigation.navigate('VehicleHistory', { vehicleId })}
+          // onPress={() => navigation.navigate('VehicleHistory', { vehicleId })}
           >
             <Text style={styles.cardText}>Últimos trajetos</Text>
           </TouchableOpacity>

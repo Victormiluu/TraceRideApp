@@ -9,14 +9,18 @@ export type RootStackParamList = {
   export interface LatLng {
     latitude: number;
     longitude: number;
-    timestamp?: string;
+    timestamp: string;
   }
   
   export interface Vehicle {
     id: string;
-    name: string;
-    model: 'Car' | 'Motorcycle';
-    plate?: string;
+    plate: string;
+    brand: string;
+    model: string;
+    color: string;
+    year: string;
+    chipCode: string;
+    status: string;
     locations: LatLng[];
-    status?: string;
+    name: string;
   }
