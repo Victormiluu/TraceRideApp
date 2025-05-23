@@ -22,17 +22,17 @@ export default function App() {
         <Stack.Screen
           name="Vehicles"
           component={VehiclesScreen}
-          options={{ title: 'My Vehicles' }}
+          options={{ headerShown: false }}
         />
         <Stack.Screen
           name="VehicleMap"
           component={VehicleMapScreen}
-          options={{ title: 'Vehicle Location' }}
+          options={{ headerShown: false }}
         />
           <Stack.Screen
           name="VehicleRegister"
           component={VehicleRegistrationScreen}
-          options={{ title: 'Vehicle Register' }}
+          options={{ headerShown: false }}
         />
         <Stack.Screen
         name="Register"

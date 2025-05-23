@@ -1,5 +1,13 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+} from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../types';
 
@@ -24,7 +32,7 @@ const RegisterScreen = ({ navigation }: Props) => {
     confirmPassword: false,
   });
 
-  const handleRegister = () => {
+  const handleRegister = async () => {
     const newErrors = {
       email: !email,
       cpf: !cpf,
@@ -36,12 +44,19 @@ const RegisterScreen = ({ navigation }: Props) => {
 
     const hasErrors = Object.values(newErrors).some(Boolean);
     if (hasErrors) {
-      Alert.alert('Error', 'Please fill all required fields.');
+      Alert.alert('Error', 'Please fill all required fields correctly.');
       return;
     }
 
-    console.log('Account created!');
-    navigation.replace('Login');
+    try {
+      const userData = { email, cpf, password };
+      await AsyncStorage.setItem('user', JSON.stringify(userData));
+      Alert.alert('Success', 'Account created!');
+      navigation.replace('Login');
+    } catch (error) {
+      console.error('AsyncStorage error:', error);
+      Alert.alert('Error', 'Failed to save user data.');
+    }
   };
 
   return (
