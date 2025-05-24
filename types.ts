@@ -20,7 +20,7 @@ export type RootStackParamList = {
     color: string;
     year: string;
     chipCode: string;
-    status: string;
+  status: 'Estacionado' | 'Em movimento';
     locations: LatLng[];
     name: string;
   }

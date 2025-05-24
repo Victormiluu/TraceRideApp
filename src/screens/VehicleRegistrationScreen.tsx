@@ -32,12 +32,13 @@ const VehicleRegistration = ({ navigation }: Props) => {
   const [color, setColor] = useState('');
   const [year, setYear] = useState('');
   const [chipCode, setChipCode] = useState('');
+  const [status, setStatus] = useState<'Estacionado' | 'Em movimento'>('Estacionado');
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   const generateRandomLocations = (): LatLng[] => {
-    const locationCount = Math.floor(Math.random() * 16) + 5; // 5-20 localizações
+    const locationCount = Math.floor(Math.random() * 16) + 5;
     const baseLat = -23.5505 + (Math.random() - 0.5) * 0.1;
     const baseLng = -46.6333 + (Math.random() - 0.5) * 0.1;
     const locations: LatLng[] = [];
@@ -53,12 +54,51 @@ const VehicleRegistration = ({ navigation }: Props) => {
     return locations;
   };
 
+  const generateInitialLocation = (): LatLng[] => {
+    const baseLat = -23.5505 + (Math.random() - 0.5) * 0.1;
+    const baseLng = -46.6333 + (Math.random() - 0.5) * 0.1;
+    return [{
+      latitude: baseLat,
+      longitude: baseLng,
+      timestamp: new Date().toISOString()
+    }];
+  };
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      const now = new Date();
+      setVehicles(currentVehicles => {
+        const updatedVehicles = currentVehicles.map(vehicle => {
+          if (vehicle.status === 'Em movimento' && vehicle.id !== 'default-vehicle') {
+            const lastLocation = vehicle.locations[vehicle.locations.length - 1];
+            const newLocation: LatLng = {
+              latitude: lastLocation.latitude + (Math.random() * 0.01 - 0.005),
+              longitude: lastLocation.longitude + (Math.random() * 0.01 - 0.005),
+              timestamp: now.toISOString(),
+            };
+            return {
+              ...vehicle,
+              locations: [...vehicle.locations, newLocation],
+            };
+          }
+          return vehicle;
+        });
+        saveVehiclesToStorage(updatedVehicles);
+        return updatedVehicles;
+      });
+    }, 60000);
+
+    return () => clearInterval(intervalId);
+  }, []);
+
   const clearFields = () => {
     setPlate('');
     setBrand('');
+    setModel('');
     setColor('');
     setYear('');
     setChipCode('');
+    setStatus('Estacionado');
     setEditingId(null);
   };
 
@@ -93,6 +133,11 @@ const VehicleRegistration = ({ navigation }: Props) => {
       return;
     }
 
+    if (editingId === 'default-vehicle') {
+      Alert.alert('Erro', 'Este veículo não pode ser editado');
+      return;
+    }
+
     const currentYear = new Date().getFullYear();
     const parsedYear = parseInt(year);
     if (isNaN(parsedYear) || parsedYear < 1900 || parsedYear > currentYear) {
@@ -108,7 +153,7 @@ const VehicleRegistration = ({ navigation }: Props) => {
     if (editingId) {
       const updatedVehicles = vehicles.map((v) =>
         v.id === editingId
-          ? { ...v, plate, brand, model, color, year, chipCode }
+          ? { ...v, plate, brand, model, color, year, chipCode, status }
           : v
       );
       setVehicles(updatedVehicles);
@@ -123,13 +168,14 @@ const VehicleRegistration = ({ navigation }: Props) => {
         color,
         year,
         chipCode,
-        status: 'Estacionado',
-        locations: generateRandomLocations(),
+        status,
+        locations: status === 'Em movimento' ? generateInitialLocation() : generateRandomLocations(),
         name: `${brand} ${model}`
       };
       const updatedVehicles = [...vehicles, newVehicle];
       setVehicles(updatedVehicles);
       saveVehiclesToStorage(updatedVehicles);
+      navigation.navigate('Vehicles');
       Alert.alert('Cadastrado', 'Veículo salvo com sucesso!');
     }
 
@@ -143,7 +189,6 @@ const VehicleRegistration = ({ navigation }: Props) => {
       </View>
     );
   }
-
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Cadastro de Veículos</Text>
@@ -209,7 +254,6 @@ const VehicleRegistration = ({ navigation }: Props) => {
   );
 };
 
-// Os estilos permanecem os mesmos
 const styles = StyleSheet.create({
   container: {
     padding: 20,
@@ -248,6 +292,25 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  statusContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  statusLabel: {
+    marginRight: 10,
+  },
+  statusButton: {
+    padding: 8,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    marginRight: 5,
+  },
+  selectedStatus: {
+    backgroundColor: primaryColor,
+    borderColor: primaryColor,
   },
 });
 

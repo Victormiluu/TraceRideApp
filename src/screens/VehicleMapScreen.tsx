@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Alert } from 'react-native';
 import MapView, { Marker, Polyline } from 'react-native-maps';
 import { RouteProp, useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -16,8 +16,8 @@ type Props = {
 };
 
 type Location = {
-  latitude: number;
-  longitude: number;
+  latitude: number | string;
+  longitude: number | string;
   timestamp: string;
 };
 
@@ -35,6 +35,8 @@ const VehicleMapScreen = ({ route }: Props) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
   const [vehicle, setVehicle] = useState<Vehicle | null>(null);
+
+
 
   useEffect(() => {
     const loadVehicle = async () => {
@@ -95,7 +97,7 @@ const VehicleMapScreen = ({ route }: Props) => {
         clearInterval(interval);
         return prev;
       });
-    }, 1000);
+    }, 3000);
 
     return () => clearInterval(interval);
   }, [vehicle?.status, vehicle?.locations?.length]);
@@ -114,6 +116,25 @@ const VehicleMapScreen = ({ route }: Props) => {
     ? vehicle.locations
     : vehicle.locations.slice(0, currentIndex + 1);
 
+  const safeParse = (val: any): number => {
+    const parsed = parseFloat(val);
+    return isNaN(parsed) ? 0 : parsed;
+  };
+  const handleDeleteVehicle = async () => {
+    try {
+      const storedVehicles = await AsyncStorage.getItem('@vehicles');
+      if (storedVehicles) {
+        const vehicles = JSON.parse(storedVehicles);
+        const updatedVehicles = vehicles.filter((v: any) => v.id !== vehicleId);
+        await AsyncStorage.setItem('@vehicles', JSON.stringify(updatedVehicles));
+        navigation.goBack();
+      }
+    } catch (error) {
+      console.error('Erro ao excluir veículo:', error);
+    }
+  };
+  
+
   return (
     <Layout>
       <View style={styles.container}>
@@ -126,31 +147,38 @@ const VehicleMapScreen = ({ route }: Props) => {
         <MapView
           style={styles.map}
           initialRegion={{
-            latitude: vehicle.locations[0].latitude,
-            longitude: vehicle.locations[0].longitude,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421,
+            latitude: safeParse(vehicle.locations[0].latitude),
+            longitude: safeParse(vehicle.locations[0].longitude),
+            latitudeDelta: 0.0100,
+            longitudeDelta: 0.0100,
           }}
           region={{
-            latitude: isParked ? finalLocation.latitude : vehicle.locations[currentIndex].latitude,
-            longitude: isParked ? finalLocation.longitude : vehicle.locations[currentIndex].longitude,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421,
+            latitude: isParked
+              ? safeParse(finalLocation.latitude)
+              : safeParse(vehicle.locations[currentIndex].latitude),
+            longitude: isParked
+              ? safeParse(finalLocation.longitude)
+              : safeParse(vehicle.locations[currentIndex].longitude),
+            latitudeDelta: 0.0100,
+            longitudeDelta: 0.0100,
           }}
         >
           <Polyline
             coordinates={coordinates.map(loc => ({
-              latitude: loc.latitude,
-              longitude: loc.longitude
+              latitude: safeParse(loc.latitude),
+              longitude: safeParse(loc.longitude),
             }))}
             strokeColor="#7CD4D9"
             strokeWidth={3}
           />
 
-          {isParked && vehicle.locations.map((location: any, index: number) => (
+          {isParked && vehicle.locations.map((location, index) => (
             <Marker
               key={index}
-              coordinate={location}
+              coordinate={{
+                latitude: safeParse(location.latitude),
+                longitude: safeParse(location.longitude),
+              }}
               title={`Ponto ${index + 1}`}
               description={location.timestamp}
               pinColor="#7CD4D9"
@@ -158,12 +186,18 @@ const VehicleMapScreen = ({ route }: Props) => {
           ))}
 
           <Marker
-            coordinate={isParked ? finalLocation : vehicle.locations[currentIndex]}
+            coordinate={{
+              latitude: isParked
+                ? safeParse(finalLocation.latitude)
+                : safeParse(vehicle.locations[currentIndex].latitude),
+              longitude: isParked
+                ? safeParse(finalLocation.longitude)
+                : safeParse(vehicle.locations[currentIndex].longitude),
+            }}
             title={isParked ? "Veículo Estacionado" : "Posição Atual"}
             description={isParked ? finalLocation.timestamp : vehicle.locations[currentIndex].timestamp}
           >
             <View style={styles.markerContainer}>
-              {!isParked && <View style={styles.movingPulse} />}
               <Icon
                 name="car"
                 size={15}
@@ -178,21 +212,28 @@ const VehicleMapScreen = ({ route }: Props) => {
           <Text style={styles.infoText}>Placa: {vehicle.plate}</Text>
 
           {!isParked && (
-            <>
-              <Text style={styles.infoText}>
-                Progresso: {currentIndex + 1}/{vehicle.locations.length}
-              </Text>
-              <Text style={styles.infoText}>
-                Última atualização: {Math.floor((new Date().getTime() - lastUpdate.getTime()) / 1000)} segundos atrás
-              </Text>
-            </>
+            <Text style={styles.infoText}>
+              Última atualização: {Math.floor((new Date().getTime() - lastUpdate.getTime()) / 1000)} segundos atrás
+            </Text>
           )}
 
-          <TouchableOpacity
-            style={styles.card}
-          // onPress={() => navigation.navigate('VehicleHistory', { vehicleId })}
-          >
+          <TouchableOpacity style={styles.card}>
             <Text style={styles.cardText}>Últimos trajetos</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.deleteButton}
+            onPress={() =>
+              Alert.alert(
+                'Excluir veículo',
+                'Tem certeza que deseja excluir este veículo?',
+                [
+                  { text: 'Cancelar', style: 'cancel' },
+                  { text: 'Excluir', onPress: handleDeleteVehicle, style: 'destructive' },
+                ]
+              )
+            }
+          >
+            <Icon name="trash" size={24} color="#FF3B30" />
           </TouchableOpacity>
         </View>
       </View>
@@ -201,6 +242,10 @@ const VehicleMapScreen = ({ route }: Props) => {
 };
 
 const styles = StyleSheet.create({
+  deleteButton: {
+    marginTop: 20,
+    alignItems: 'center',
+  },
   container: {
     flex: 1,
     backgroundColor: '#FFF',
@@ -235,17 +280,6 @@ const styles = StyleSheet.create({
   },
   markerContainer: {
     alignItems: 'center',
-  },
-  movingPulse: {
-    position: 'absolute',
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    backgroundColor: '#7CD4D950',
-    borderWidth: 2,
-    borderColor: '#7CD4D9',
-    top: -5,
-    left: 6,
   },
   card: {
     marginTop: 20,
