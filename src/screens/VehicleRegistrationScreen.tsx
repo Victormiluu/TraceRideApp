@@ -9,6 +9,7 @@ import {
   Alert,
   ScrollView,
   ActivityIndicator,
+  SafeAreaView,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { RootStackParamList, LatLng, Vehicle } from '../../types';
@@ -190,7 +191,8 @@ const VehicleRegistration = ({ navigation }: Props) => {
     );
   }
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <SafeAreaView style={styles.safeContainer}>
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
       <Text style={styles.title}>Cadastro de Veículos</Text>
 
       <TextInput
@@ -250,15 +252,18 @@ const VehicleRegistration = ({ navigation }: Props) => {
       >
         <Text style={styles.buttonText}>Limpar Campos</Text>
       </TouchableOpacity>
-    </ScrollView>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    padding: 20,
+   safeContainer: {
+    flex: 1,
     backgroundColor: '#fff',
-    flexGrow: 1,
+  },
+  scrollContainer: {
+    padding: 20, // espaçamento interno
   },
   title: {
     fontSize: 22,
